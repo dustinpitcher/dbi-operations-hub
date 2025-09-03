@@ -217,9 +217,8 @@ def import_datetime():
 
 if __name__ == '__main__':
     try:
-        # For direct execution, use the module-level app or create a new one
-        if 'app' not in globals():
-            app = create_app()
+        # Create app with environment-based configuration
+        app = create_app()
         
         # Use PORT environment variable for Azure, default to 5000 for local development
         port = int(os.environ.get('PORT', 5000))
