@@ -4,9 +4,10 @@ FROM python:3.9-slim
 # Set working directory
 WORKDIR /app
 
-# Install system dependencies for pandas and openpyxl
+# Install system dependencies for pandas, openpyxl, and our security utilities
 RUN apt-get update && apt-get install -y \
     gcc \
+    curl \
     && rm -rf /var/lib/apt/lists/*
 
 # Copy requirements first for better Docker layer caching
@@ -19,15 +20,34 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY . .
 
 # Create non-root user for security
-RUN useradd -m -u 1000 appuser && chown -R appuser:appuser /app
+RUN useradd -m -u 1000 appuser
+
+# Create all necessary directories with proper permissions
+RUN mkdir -p \
+    uploads \
+    staging \
+    logs \
+    uploads/assembly \
+    uploads/purchase_orders \
+    staging/assembly \
+    staging/purchase_orders \
+    && chown -R appuser:appuser /app
+
+# Switch to non-root user
 USER appuser
 
-# Create necessary directories
-RUN mkdir -p uploads staging uploads/assembly uploads/purchase_orders staging/purchase_orders
+# Set production environment variables
+ENV FLASK_ENV=production
+ENV LOG_LEVEL=INFO
+ENV PYTHONPATH=/app
 
 # Expose port (Azure will set PORT env variable)
 EXPOSE 8000
 
-# Use gunicorn for production with optimized settings for combined app
-# Extended timeout for comprehensive reporting and PO generation
-CMD ["sh", "-c", "gunicorn --bind 0.0.0.0:${PORT:-8000} --workers 1 --timeout 600 --max-requests 100 --max-requests-jitter 10 --preload app:app"]
+# Health check for container monitoring
+HEALTHCHECK --interval=30s --timeout=30s --start-period=60s --retries=3 \
+    CMD curl -f http://localhost:${PORT:-8000}/health || exit 1
+
+# Use gunicorn with our WSGI entry point
+# Optimized settings for the enhanced DBI Operations Hub
+CMD ["sh", "-c", "gunicorn --bind 0.0.0.0:${PORT:-8000} --workers 2 --threads 4 --timeout 300 --max-requests 1000 --max-requests-jitter 50 --preload --access-logfile - --error-logfile - wsgi:app"]
