@@ -215,10 +215,6 @@ def import_datetime():
     return datetime
 
 
-# Create module-level app variable for Azure/Gunicorn
-# This allows 'gunicorn app:app' to find the app instance
-app = create_app()
-
 if __name__ == '__main__':
     try:
         # For direct execution, use the module-level app or create a new one

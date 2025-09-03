@@ -39,7 +39,7 @@ class Config:
     ASSEMBLY_SAFETY_BUFFER_DAYS = 3
     PO_LEAD_TIME_BUFFER_DAYS = 3
     
-    # File cleanup configuration
+        # File cleanup configuration
     FILE_CLEANUP_ENABLED = True
     FILE_CLEANUP_INTERVAL_HOURS = 24
     
