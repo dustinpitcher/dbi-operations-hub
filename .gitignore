@@ -44,6 +44,12 @@ staging/*/
 logs/
 *.log
 
+# Azure Deployment Logs
+LogFiles/
+deployments/
+azure-logs.zip
+*.deployment
+
 # Temporary Files
 *.tmp
 *_temp.*

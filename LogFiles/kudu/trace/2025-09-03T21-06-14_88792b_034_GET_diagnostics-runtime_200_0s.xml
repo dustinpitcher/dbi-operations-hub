@@ -1,5 +1,0 @@
-<step title="Incoming Request" date="2025-09-03T21:06:14.500" instance="88792b" url="/diagnostics/runtime" method="GET" type="request" pid="801,1,24" Host="dbi-operations-hub.scm.azurewebsites.net" User-Agent="GITHUBACTIONS_DeployWebAppToAzure_eba64638a26dd79b1c053492e21d4561d2120a32ccf0ecfdb0234bff683b7100" Authorization="Bas..." Content-Type="application/json; charset=utf-8" Content-Length="0" X-ARR-LOG-ID="def01ce0-61bc-4922-b4f2-6fb3bf565c6e" CLIENT-IP="135.232.200.194:19392" X-SITE-DEPLOYMENT-ID="dbi-operations-hub" WAS-DEFAULT-HOSTNAME="dbi-operations-hub.scm.azurewebsites.net" X-Forwarded-Proto="https" X-AppService-Proto="https" X-Forwarded-TlsVersion="1.3" X-WAWS-Unencoded-URL="/diagnostics/runtime" X-Client-IP="135.232.200.194" X-Client-Port="19392" >
-  <step title="Cleanup Xml Logs" date="2025-09-03T21:06:14.503" /><!-- duration: 6ms -->
-  <step title="RuntimeController.GetRuntimeVersions" date="2025-09-03T21:06:14.526" /><!-- duration: 7ms -->
-  <step title="Outgoing response" date="2025-09-03T21:06:14.563" type="response" statusCode="200" statusText="OK" /><!-- duration: 5ms -->
-</step><!-- duration: 76ms -->

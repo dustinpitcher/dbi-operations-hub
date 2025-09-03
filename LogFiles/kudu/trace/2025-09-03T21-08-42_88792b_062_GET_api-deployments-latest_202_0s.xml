@@ -1,9 +1,0 @@
-<step title="Incoming Request" date="2025-09-03T21:08:42.103" instance="88792b" url="/api/deployments/latest?deployer=GITHUB_ZIP_DEPLOY&amp;time=2025-09-03_21-06-17Z" method="GET" type="request" pid="801,1,31" Host="dbi-operations-hub.scm.azurewebsites.net" User-Agent="GITHUBACTIONS_DeployWebAppToAzure_eba64638a26dd79b1c053492e21d4561d2120a32ccf0ecfdb0234bff683b7100" Authorization="Bas..." Content-Type="application/json; charset=utf-8" Cookie="ARRAffinity=88792b837b4de44eba1004ce842f47b2378b7ae95d6de67681373d54802a0f1d;Path=/;HttpOnly;Secure;Domain=dbi-operations-hub.scm.azurewebsites.net; ARRAffinitySameSite=88792b837b4de44eba1004ce842f47b2378b7ae95d6de67681373d54802a0f1d;Path=/;HttpOnly;SameSite=None;Secure;Domain=dbi-operations-hub.scm.azurewebsites.net" Content-Length="0" X-ARR-LOG-ID="04ea35a2-6d45-462f-be58-997e6a9f9695" CLIENT-IP="135.232.200.194:19393" X-SITE-DEPLOYMENT-ID="dbi-operations-hub" WAS-DEFAULT-HOSTNAME="dbi-operations-hub.scm.azurewebsites.net" X-Forwarded-Proto="https" X-AppService-Proto="https" X-Forwarded-TlsVersion="1.3" X-WAWS-Unencoded-URL="/api/deployments/latest?deployer=GITHUB_ZIP_DEPLOY&amp;time=2025-09-03_21-06-17Z" X-Client-IP="135.232.200.194" X-Client-Port="19393" >
-  <step title="Cleanup Xml Logs" date="2025-09-03T21:08:42.110" /><!-- duration: 11ms -->
-  <step title="DeploymentService.GetResult" date="2025-09-03T21:08:42.132" >
-    <step title="DeploymentService.GetLatestDeployment" date="2025-09-03T21:08:42.141" >
-      <step title="DeploymentManager.GetResults" date="2025-09-03T21:08:42.150" /><!-- duration: 217ms -->
-    </step><!-- duration: 229ms -->
-  </step><!-- duration: 243ms -->
-  <step title="Outgoing response" date="2025-09-03T21:08:42.378" type="response" statusCode="202" statusText="Accepted" /><!-- duration: 11ms -->
-</step><!-- duration: 292ms -->
