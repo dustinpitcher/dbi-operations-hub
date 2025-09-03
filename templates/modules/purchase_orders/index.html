@@ -1,0 +1,371 @@
+{% extends "base.html" %}
+
+{% block title %}Purchase Order Generation - DBI Operations Hub{% endblock %}
+
+{% block extra_css %}
+<style>
+    .warehouse-selection {
+        background: #fff3cd;
+        padding: 20px;
+        border-radius: 8px;
+        margin: 20px 0;
+        border: 1px solid #ffeaa7;
+    }
+    
+    .radio-option {
+        display: inline-block;
+        margin: 10px 20px 10px 0;
+        cursor: pointer;
+    }
+    
+    .radio-option input[type="radio"] {
+        margin-right: 8px;
+    }
+    
+    .upload-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+        margin: 30px 0;
+    }
+    
+    .upload-card {
+        background: #f8f9fa;
+        padding: 20px;
+        border-radius: 8px;
+        border: 2px solid #dee2e6;
+        transition: all 0.3s ease;
+    }
+    
+    .upload-card.validated {
+        border-color: #28a745;
+        background: #d4edda;
+    }
+    
+    .upload-card.error {
+        border-color: #dc3545;
+        background: #f8d7da;
+    }
+    
+    .file-input {
+        margin: 10px 0;
+    }
+    
+    .file-input input[type="file"] {
+        width: 100%;
+        padding: 10px;
+        border: 2px dashed #3498db;
+        border-radius: 6px;
+        background: white;
+    }
+    
+    .upload-btn {
+        background: var(--secondary-color);
+        color: white;
+        border: none;
+        padding: 8px 16px;
+        border-radius: 4px;
+        cursor: pointer;
+        margin-top: 10px;
+    }
+    
+    .upload-btn:hover {
+        background: #2980b9;
+    }
+    
+    .upload-btn:disabled {
+        background: #6c757d;
+        cursor: not-allowed;
+    }
+    
+    .validation-result {
+        margin: 15px 0;
+        padding: 10px;
+        border-radius: 6px;
+        font-weight: 500;
+    }
+    
+    .validation-success {
+        background: #d4edda;
+        color: #155724;
+        border: 1px solid #c3e6cb;
+    }
+    
+    .validation-error {
+        background: #f8d7da;
+        color: #721c24;
+        border: 1px solid #f5c6cb;
+    }
+    
+    .generate-section {
+        background: #e8f5e8;
+        padding: 25px;
+        border-radius: 8px;
+        text-align: center;
+        margin-top: 30px;
+    }
+    
+    .progress-indicator {
+        display: flex;
+        justify-content: space-between;
+        margin: 20px 0;
+        gap: 10px;
+    }
+    
+    .progress-step {
+        flex: 1;
+        text-align: center;
+        padding: 10px;
+        border-radius: 6px;
+        font-size: 14px;
+        font-weight: 500;
+    }
+    
+    .progress-step.complete {
+        background: #d4edda;
+        color: #155724;
+    }
+    
+    .progress-step.pending {
+        background: #f8f9fa;
+        color: #6c757d;
+    }
+    
+    .management-links {
+        text-align: right;
+        margin-bottom: 20px;
+    }
+    
+    .management-links a {
+        background: var(--danger-color);
+        color: white;
+        padding: 8px 16px;
+        text-decoration: none;
+        border-radius: 6px;
+        font-weight: bold;
+        margin-left: 10px;
+    }
+    
+    .management-links a:hover {
+        background: #c0392b;
+    }
+    
+    @media (max-width: 768px) {
+        .upload-grid {
+            grid-template-columns: 1fr;
+        }
+        
+        .management-links {
+            text-align: center;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="management-links">
+    <a href="{{ url_for('purchase_orders.manage_suppliers') }}">🚫 Manage Excluded Suppliers</a>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <h1 class="card-title">💰 Purchase Order Generation</h1>
+        <p class="text-muted">Generate automated purchase orders for NC and CA warehouses</p>
+    </div>
+
+    <!-- Warehouse Selection -->
+    <div class="warehouse-selection">
+        <h3>🏢 Select Warehouse Location:</h3>
+        <label class="radio-option">
+            <input type="radio" name="location" value="nc" checked onchange="updateLocation()">
+            <span>North Carolina (NC) Warehouse</span>
+        </label>
+        <label class="radio-option">
+            <input type="radio" name="location" value="ca" onchange="updateLocation()">
+            <span>California (CA) Warehouse</span>
+        </label>
+    </div>
+
+    <!-- Progress Indicator -->
+    <div class="progress-indicator">
+        <div class="progress-step pending" id="sales-progress">📊 Sales Report</div>
+        <div class="progress-step pending" id="replenishment-progress">📋 Replenishment</div>
+        <div class="progress-step pending" id="inventory-progress">📦 Inventory List</div>
+        <div class="progress-step pending" id="availability-progress">📈 Availability</div>
+    </div>
+
+    <!-- File Upload Grid -->
+    <div class="upload-grid">
+        <!-- Sales Report Upload -->
+        <div class="upload-card" id="sales-card">
+            <h3>📊 Sales Report</h3>
+            <p>Upload the Sales by Product Details Report from DEAR Systems</p>
+            <div class="file-input">
+                <input type="file" id="sales-file" accept=".xlsx" onchange="uploadFile('sales')">
+                <button class="upload-btn" onclick="uploadFile('sales')" id="sales-btn" disabled>Upload & Validate</button>
+            </div>
+            <div id="sales-result"></div>
+        </div>
+
+        <!-- Replenishment Report Upload -->
+        <div class="upload-card" id="replenishment-card">
+            <h3>📋 Replenishment Report</h3>
+            <p>Upload the replenishment report from Inventory Planner</p>
+            <div class="file-input">
+                <input type="file" id="replenishment-file" accept=".csv" onchange="uploadFile('replenishment')">
+                <button class="upload-btn" onclick="uploadFile('replenishment')" id="replenishment-btn" disabled>Upload & Validate</button>
+            </div>
+            <div id="replenishment-result"></div>
+        </div>
+
+        <!-- Inventory List Upload -->
+        <div class="upload-card" id="inventory-card">
+            <h3>📦 Inventory List</h3>
+            <p>Upload the inventory list from DEAR Systems</p>
+            <div class="file-input">
+                <input type="file" id="inventory-file" accept=".csv" onchange="uploadFile('inventory')">
+                <button class="upload-btn" onclick="uploadFile('inventory')" id="inventory-btn" disabled>Upload & Validate</button>
+            </div>
+            <div id="inventory-result"></div>
+        </div>
+
+        <!-- Availability Report Upload -->
+        <div class="upload-card" id="availability-card">
+            <h3>📈 Availability Report</h3>
+            <p>Upload the availability report from DEAR Systems</p>
+            <div class="file-input">
+                <input type="file" id="availability-file" accept=".csv" onchange="uploadFile('availability')">
+                <button class="upload-btn" onclick="uploadFile('availability')" id="availability-btn" disabled>Upload & Validate</button>
+            </div>
+            <div id="availability-result"></div>
+        </div>
+    </div>
+
+    <!-- Generate Section -->
+    <div class="generate-section">
+        <h2>🚀 Generate Purchase Order</h2>
+        <p id="ready-message">Upload and validate all 4 files above to generate your purchase order.</p>
+        <button class="btn btn-success btn-large" id="generate-btn" onclick="generatePO()" disabled>Generate Purchase Order</button>
+    </div>
+
+    <!-- Instructions Section -->
+    <div class="card mt-3" style="background: #f8f9fa;">
+        <div class="card-header">
+            <h3>📋 File Requirements</h3>
+        </div>
+        
+        <div class="grid grid-2">
+            <div>
+                <h4>📊 Sales Report (Excel)</h4>
+                <ul style="margin-left: 1.5rem; color: var(--text-muted);">
+                    <li>Combined format: Single Excel with Sales, COGS, Profit, Quantity</li>
+                    <li>Separate format: 4 individual Excel files (legacy support)</li>
+                </ul>
+                
+                <h4>📋 Replenishment Report (CSV)</h4>
+                <ul style="margin-left: 1.5rem; color: var(--text-muted);">
+                    <li>Required: SKU, Lead time, Adjusted sales velocity/day, Cost price</li>
+                    <li>Export from Inventory Planner replenishment view</li>
+                </ul>
+            </div>
+            
+            <div>
+                <h4>📦 Inventory List (CSV)</h4>
+                <ul style="margin-left: 1.5rem; color: var(--text-muted);">
+                    <li>Required: ProductCode, LastSuppliedBy</li>
+                    <li>Optional: Name, SupplierProductCode</li>
+                </ul>
+                
+                <h4>📈 Availability Report (CSV)</h4>
+                <ul style="margin-left: 1.5rem; color: var(--text-muted);">
+                    <li>Required: SKU, Location, Available, OnOrder</li>
+                    <li>Export all locations from DEAR Systems</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+let uploadedFiles = { sales: false, replenishment: false, inventory: false, availability: false };
+let selectedLocation = 'nc';
+
+function updateLocation() {
+    selectedLocation = document.querySelector('input[name="location"]:checked').value;
+}
+
+function enableUploadButton(fileType) {
+    const fileInput = document.getElementById(fileType + '-file');
+    const uploadBtn = document.getElementById(fileType + '-btn');
+    uploadBtn.disabled = !fileInput.files[0];
+}
+
+function uploadFile(fileType) {
+    const fileInput = document.getElementById(fileType + '-file');
+    const file = fileInput.files[0];
+    if (!file) return;
+
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('file_type', fileType);
+
+    const resultDiv = document.getElementById(fileType + '-result');
+    resultDiv.innerHTML = '<div style="color: #007bff;">⏳ Uploading and validating...</div>';
+
+    fetch('{{ url_for("purchase_orders.upload_single_file") }}', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.valid) {
+            resultDiv.innerHTML = `<div class="validation-success">${data.message}</div>`;
+            document.getElementById(fileType + '-card').className = 'upload-card validated';
+            document.getElementById(fileType + '-progress').className = 'progress-step complete';
+            uploadedFiles[fileType] = true;
+        } else {
+            resultDiv.innerHTML = `<div class="validation-error">${data.message}</div>`;
+            document.getElementById(fileType + '-card').className = 'upload-card error';
+            uploadedFiles[fileType] = false;
+        }
+        checkAllFilesReady();
+    })
+    .catch(error => {
+        resultDiv.innerHTML = `<div class="validation-error">❌ Upload failed: ${error}</div>`;
+        document.getElementById(fileType + '-card').className = 'upload-card error';
+        uploadedFiles[fileType] = false;
+        checkAllFilesReady();
+    });
+}
+
+function checkAllFilesReady() {
+    const allReady = Object.values(uploadedFiles).every(status => status === true);
+    const generateBtn = document.getElementById('generate-btn');
+    const readyMessage = document.getElementById('ready-message');
+    
+    if (allReady) {
+        generateBtn.disabled = false;
+        readyMessage.textContent = `✅ All files validated! Ready to generate ${selectedLocation.toUpperCase()} warehouse purchase order.`;
+        readyMessage.style.color = '#28a745';
+    } else {
+        generateBtn.disabled = true;
+        const remaining = Object.keys(uploadedFiles).filter(key => !uploadedFiles[key]);
+        readyMessage.textContent = `Upload and validate remaining files: ${remaining.join(', ')}`;
+        readyMessage.style.color = '#6c757d';
+    }
+}
+
+function generatePO() {
+    window.location.href = `{{ url_for('purchase_orders.generate_po') }}?location=${selectedLocation}`;
+}
+
+// Enable upload buttons when files are selected
+['sales', 'replenishment', 'inventory', 'availability'].forEach(fileType => {
+    document.getElementById(fileType + '-file').onchange = function() {
+        enableUploadButton(fileType);
+    };
+});
+</script>
+{% endblock %}

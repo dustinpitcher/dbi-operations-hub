@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block title %}Purchase Order Generated - DBI Operations Hub{% endblock %}
+
+{% block content %}
+<div class="text-center" style="padding: 50px; font-family: sans-serif;">
+    <div class="card">
+        <div style="color: #27ae60; font-size: 3rem; margin-bottom: 20px;">
+            ✅
+        </div>
+        
+        <h2 style="color: #2c3e50; margin-bottom: 20px;">Purchase Order Generated Successfully!</h2>
+        
+        <p style="font-size: 18px; color: #34495e; margin-bottom: 10px;">
+            Location: <strong>{{ location }} Warehouse</strong>
+        </p>
+        
+        <div style="margin: 30px 0;">
+            <a href="{{ download_url }}" class="btn btn-success btn-large" style="text-decoration: none;">
+                📥 Download {{ location }} Purchase Order
+            </a>
+        </div>
+        
+        <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #dee2e6;">
+            <p style="color: #6c757d; font-size: 14px; margin-bottom: 20px;">
+                CSV file is ready for direct import into Cin7 Core
+            </p>
+            
+            <a href="{{ url_for('purchase_orders.po_index') }}" class="btn btn-primary" style="margin-right: 15px; text-decoration: none;">
+                🔄 Generate Another PO
+            </a>
+            
+            <a href="{{ url_for('index') }}" class="btn btn-primary" style="text-decoration: none;">
+                🏠 Back to Dashboard
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

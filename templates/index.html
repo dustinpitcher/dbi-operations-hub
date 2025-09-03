@@ -1,0 +1,156 @@
+{% extends "base.html" %}
+
+{% block title %}DBI Operations Hub - Business Management Dashboard{% endblock %}
+
+{% block content %}
+<div class="text-center mb-3">
+    <h1>🏢 DBI Operations Hub</h1>
+    <p class="text-muted">Comprehensive business operations management for Dirty Bird Industries</p>
+</div>
+
+<div class="grid grid-2">
+    <!-- Assembly Management Module -->
+    <div class="card">
+        <div class="card-header">
+            <h2 class="card-title">🏭 Assembly Management</h2>
+        </div>
+        <p class="mb-3">
+            Generate intelligent assembly recommendations and transfer suggestions based on inventory levels, 
+            sales velocity, and component availability.
+        </p>
+        
+        <div class="mb-3">
+            <h4>Key Features:</h4>
+            <ul style="margin-left: 1.5rem; color: var(--text-muted);">
+                <li>Assembly analysis with BOM component checking</li>
+                <li>Transfer recommendations between NC warehouses</li>
+                <li>30-day inventory target optimization</li>
+                <li>Professional Excel reports with 4 comprehensive sheets</li>
+                <li>Priority-based sorting (urgent needs first)</li>
+            </ul>
+        </div>
+        
+        <div class="text-center">
+            <a href="{{ url_for('assembly.assembly_index') }}" class="btn btn-primary btn-large">
+                🏭 Start Assembly Analysis
+            </a>
+        </div>
+        
+        <div class="mt-3 text-center text-muted">
+            <small>Upload: Availability Report, Replenishment Data, BOM Components</small>
+        </div>
+    </div>
+
+    <!-- Purchase Order Generation Module -->
+    <div class="card">
+        <div class="card-header">
+            <h2 class="card-title">💰 Purchase Order Generation</h2>
+        </div>
+        <p class="mb-3">
+            Automate weekly purchase order creation for NC and CA warehouses with intelligent 
+            profit-based velocity calculations and supplier management.
+        </p>
+        
+        <div class="mb-3">
+            <h4>Key Features:</h4>
+            <ul style="margin-left: 1.5rem; color: var(--text-muted);">
+                <li>Multi-warehouse support (NC & CA)</li>
+                <li>Profit margin-based velocity adjustments</li>
+                <li>Lead time + safety buffer calculations</li>
+                <li>Excluded supplier management (27+ pre-configured)</li>
+                <li>Cin7 Core ready CSV export</li>
+            </ul>
+        </div>
+        
+        <div class="text-center">
+            <a href="{{ url_for('purchase_orders.po_index') }}" class="btn btn-success btn-large">
+                💰 Generate Purchase Orders
+            </a>
+        </div>
+        
+        <div class="mt-3 text-center text-muted">
+            <small>Upload: Sales Report, Replenishment Data, Inventory List, Availability Report</small>
+        </div>
+    </div>
+</div>
+
+<!-- System Information -->
+<div class="card">
+    <div class="card-header">
+        <h2 class="card-title">📊 Platform Information</h2>
+    </div>
+    
+    <div class="grid grid-2">
+        <div>
+            <h4>Current Modules</h4>
+            <ul style="margin-left: 1.5rem;">
+                <li><strong>Assembly Management</strong> - Production planning and transfers</li>
+                <li><strong>Purchase Order Generation</strong> - Automated procurement</li>
+            </ul>
+        </div>
+        
+        <div>
+            <h4>Cost Optimization</h4>
+            <p class="text-muted">
+                <strong>50% cost savings</strong> achieved by combining both applications into a single 
+                Azure App Service (~$18/month vs $36/month for separate deployments).
+            </p>
+        </div>
+    </div>
+    
+    <div class="mt-3">
+        <h4>Future Module Roadmap</h4>
+        <div class="grid grid-2">
+            <div>
+                <ul style="margin-left: 1.5rem; color: var(--text-muted);">
+                    <li>📊 Sales Analytics & Reporting</li>
+                    <li>👥 HR Management & Employee Tools</li>
+                    <li>💼 Customer Relationship Management</li>
+                </ul>
+            </div>
+            <div>
+                <ul style="margin-left: 1.5rem; color: var(--text-muted);">
+                    <li>🔧 Quality Control & Compliance</li>
+                    <li>📈 Financial Reporting & Analysis</li>
+                    <li>🚚 Shipping & Logistics Management</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Quick Actions -->
+<div class="card">
+    <div class="card-header">
+        <h2 class="card-title">⚡ Quick Actions</h2>
+    </div>
+    
+    <div class="text-center">
+        <a href="{{ url_for('purchase_orders.manage_suppliers') }}" class="btn btn-danger" style="margin-right: 1rem;">
+            🚫 Manage Excluded Suppliers
+        </a>
+        <a href="/health" class="btn btn-primary">
+            ❤️ System Health Check
+        </a>
+    </div>
+</div>
+
+<script>
+// Simple analytics tracking for module usage
+function trackModuleAccess(module) {
+    console.log(`Accessing module: ${module}`);
+    // Future: Add actual analytics tracking here
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Add click tracking to module buttons
+    document.querySelectorAll('a[href*="assembly"]').forEach(link => {
+        link.addEventListener('click', () => trackModuleAccess('assembly'));
+    });
+    
+    document.querySelectorAll('a[href*="po"]').forEach(link => {
+        link.addEventListener('click', () => trackModuleAccess('purchase_orders'));
+    });
+});
+</script>
+{% endblock %}

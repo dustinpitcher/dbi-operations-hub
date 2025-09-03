@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block title %}Error - Purchase Order Generation{% endblock %}
+
+{% block content %}
+<div class="text-center" style="padding: 50px;">
+    <div class="card">
+        <div style="color: #e74c3c; font-size: 3rem; margin-bottom: 20px;">
+            ❌
+        </div>
+        
+        <h2 style="color: #2c3e50; margin-bottom: 20px;">Error Processing Files</h2>
+        
+        <div class="alert alert-error" style="margin: 20px 0;">
+            {{ message }}
+        </div>
+        
+        <div style="margin-top: 30px;">
+            <a href="{{ url_for('purchase_orders.po_index') }}" class="btn btn-primary" style="margin-right: 15px; text-decoration: none;">
+                🔄 Try Again
+            </a>
+            
+            <a href="{{ url_for('index') }}" class="btn btn-primary" style="text-decoration: none;">
+                🏠 Back to Dashboard
+            </a>
+        </div>
+        
+        <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #dee2e6;">
+            <h4 style="color: #34495e;">Troubleshooting Tips:</h4>
+            <ul style="text-align: left; margin: 15px 0; color: #6c757d;">
+                <li>Ensure all 4 files are uploaded and validated</li>
+                <li>Check that files match the required column formats</li>
+                <li>Verify files are not corrupted or empty</li>
+                <li>Make sure you selected the correct warehouse location</li>
+            </ul>
+        </div>
+    </div>
+</div>
+{% endblock %}

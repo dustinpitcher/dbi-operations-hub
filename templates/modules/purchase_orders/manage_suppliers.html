@@ -1,0 +1,132 @@
+{% extends "base.html" %}
+
+{% block title %}Manage Excluded Suppliers - DBI Operations Hub{% endblock %}
+
+{% block extra_css %}
+<style>
+    .info-section {
+        background: #fff3cd;
+        padding: 20px;
+        margin: 20px 0;
+        border-radius: 8px;
+        border-left: 4px solid #ffc107;
+    }
+    
+    .supplier-count {
+        color: #28a745;
+        font-weight: bold;
+    }
+    
+    textarea {
+        width: 100%;
+        height: 400px;
+        padding: 15px;
+        border: 2px solid #ddd;
+        border-radius: 8px;
+        font-family: monospace;
+        font-size: 14px;
+        line-height: 1.4;
+        resize: vertical;
+    }
+    
+    .button-group {
+        margin: 20px 0;
+        text-align: center;
+    }
+    
+    .back-link {
+        background: #6c757d;
+        color: #fff;
+        text-decoration: none;
+        padding: 15px 30px;
+        border-radius: 8px;
+        font-weight: bold;
+        margin-left: 15px;
+    }
+    
+    .back-link:hover {
+        background: #5a6268;
+        text-decoration: none;
+        color: #fff;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header">
+        <h1 class="card-title">🚫 Manage Excluded Suppliers</h1>
+        <p class="text-muted">Control which suppliers are automatically filtered from purchase orders</p>
+    </div>
+    
+    <div class="info-section">
+        <h3>ℹ️ How It Works</h3>
+        <p>Suppliers listed below will be <strong>automatically excluded</strong> from all generated purchase orders. This is useful for removing suppliers you no longer work with, internal transfers, or problematic vendors.</p>
+        <p><strong>Instructions:</strong> Enter one supplier name per line (case-insensitive matching)</p>
+        <p><strong>Current Count:</strong> <span class="supplier-count">{{ supplier_count }} excluded suppliers</span></p>
+    </div>
+
+    <form method="post">
+        <div class="mb-3">
+            <label for="suppliers"><h3>📝 Edit Excluded Suppliers</h3></label>
+            <textarea name="suppliers" id="suppliers" placeholder="Enter supplier names, one per line...">{{ suppliers_text }}</textarea>
+        </div>
+        
+        <div class="button-group">
+            <input type="submit" value="💾 Save Exclusion List" class="btn btn-danger btn-large">
+            <a href="{{ url_for('purchase_orders.po_index') }}" class="back-link">← Back to PO Generation</a>
+        </div>
+    </form>
+    
+    {% if message %}
+    <div class="alert {% if '✅' in message %}alert-success{% else %}alert-error{% endif %}" style="margin: 20px 0;">
+        {{ message }}
+    </div>
+    {% endif %}
+    
+    <!-- Current Excluded Suppliers Preview -->
+    {% if supplier_count > 0 %}
+    <div class="card" style="background: #f8f9fa; margin-top: 30px;">
+        <div class="card-header">
+            <h3>📋 Currently Excluded Suppliers ({{ supplier_count }})</h3>
+        </div>
+        <div style="max-height: 200px; overflow-y: auto; padding: 15px;">
+            {% for line in suppliers_text.split('\n') %}
+                {% if line.strip() %}
+                <div style="padding: 5px 10px; background: #fff; margin: 3px 0; border-radius: 4px; border: 1px solid #dee2e6;">
+                    {{ line.strip() }}
+                </div>
+                {% endif %}
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+    
+    <!-- Instructions -->
+    <div class="card" style="margin-top: 30px;">
+        <div class="card-header">
+            <h3>💡 Management Tips</h3>
+        </div>
+        <div class="grid grid-2">
+            <div>
+                <h4>Adding Suppliers</h4>
+                <ul style="margin-left: 1.5rem; color: var(--text-muted);">
+                    <li>Enter one supplier name per line</li>
+                    <li>Case-insensitive matching</li>
+                    <li>Exact name matching (no wildcards)</li>
+                    <li>Changes take effect immediately</li>
+                </ul>
+            </div>
+            <div>
+                <h4>Common Exclusions</h4>
+                <ul style="margin-left: 1.5rem; color: var(--text-muted);">
+                    <li>Internal transfers (DBI, LLC)</li>
+                    <li>Discontinued suppliers</li>
+                    <li>Problematic vendors</li>
+                    <li>Test/dummy suppliers</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

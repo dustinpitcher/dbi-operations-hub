@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block title %}Page Not Found - DBI Operations Hub{% endblock %}
+
+{% block content %}
+<div class="text-center" style="padding: 80px 20px;">
+    <div style="font-size: 6rem; color: #e74c3c; margin-bottom: 20px;">404</div>
+    <h1 style="color: #2c3e50; margin-bottom: 20px;">Page Not Found</h1>
+    <p style="font-size: 18px; color: #6c757d; margin-bottom: 30px;">
+        The page you're looking for doesn't exist or has been moved.
+    </p>
+    
+    <div>
+        <a href="{{ url_for('index') }}" class="btn btn-primary btn-large" style="margin-right: 15px; text-decoration: none;">
+            🏠 Back to Dashboard
+        </a>
+        <button onclick="window.history.back()" class="btn btn-primary">
+            ← Go Back
+        </button>
+    </div>
+</div>
+{% endblock %}
