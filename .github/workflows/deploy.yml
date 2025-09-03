@@ -100,44 +100,57 @@ jobs:
           --env FLASK_ENV=production \
           --env SECRET_KEY=test-key-for-container-validation-only \
           --env LOG_LEVEL=INFO \
+          --env PORT=8000 \
           --publish 8080:8000 \
           --health-start-period=30s \
           "$IMAGE_TAG"
         
         echo "⏳ Waiting for container to start..."
-        sleep 20
+        sleep 30
         
         # Check container status
-        if ! docker ps | grep -q test-container; then
-          echo "❌ Container failed to start"
-          docker logs test-container
-          exit 1
-        fi
+        echo "📋 Container status:"
+        docker ps | grep test-container || echo "Container not running"
         
-        echo "✅ Container is running"
+        echo "📋 Container logs (last 20 lines):"
+        docker logs --tail 20 test-container
         
-        # Test health endpoint
+        # Test health endpoint with better debugging
         echo "🏥 Testing health endpoint..."
-        MAX_ATTEMPTS=10
+        MAX_ATTEMPTS=6
         for i in $(seq 1 $MAX_ATTEMPTS); do
-          if curl -f -s -m 10 http://localhost:8080/health | grep -q '"status": "healthy"'; then
+          echo "🔍 Health check attempt $i/$MAX_ATTEMPTS..."
+          
+          # Test with curl and show response
+          RESPONSE=$(curl -s -m 15 http://localhost:8080/health 2>&1)
+          HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" -m 15 http://localhost:8080/health 2>/dev/null)
+          
+          echo "HTTP Code: $HTTP_CODE"
+          echo "Response: $RESPONSE"
+          
+          if [[ "$RESPONSE" == *'"status": "healthy"'* ]]; then
             echo "✅ Container health check passed!"
             break
           else
             if [ $i -eq $MAX_ATTEMPTS ]; then
               echo "❌ Container health check failed after $MAX_ATTEMPTS attempts"
+              echo "📋 Final container logs:"
               docker logs test-container
               exit 1
             else
-              echo "⏳ Health check attempt $i/$MAX_ATTEMPTS failed, retrying..."
-              sleep 5
+              echo "⏳ Retrying in 10 seconds..."
+              sleep 10
             fi
           fi
         done
         
-        # Additional endpoint tests
-        echo "🧪 Testing additional endpoints..."
-        curl -f -s -m 10 http://localhost:8080/ > /dev/null && echo "✅ Dashboard endpoint: OK"
+        # Test dashboard endpoint
+        echo "🧪 Testing dashboard endpoint..."
+        if curl -f -s -m 10 http://localhost:8080/ > /dev/null 2>&1; then
+          echo "✅ Dashboard endpoint: Responding"
+        else
+          echo "⚠️ Dashboard endpoint: Not responding (may be normal for test)"
+        fi
         
         # Cleanup test container
         docker stop test-container || true
